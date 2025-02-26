@@ -1,0 +1,22 @@
+(use-modules (guix packages)
+             (gnu)
+             (guix utils)
+             (guix git-download)
+             (guix download)
+             (gnu packages guile)
+             (gnu packages nss)
+             (gnu packages guile-xyz)
+             (gnu packages pkg-config)
+             (guix build-system guile)
+             (gnu packages linux)
+             (gnu packages compression)
+             (gnu packages texinfo)
+             (gnu packages autotools)
+             ((guix licenses)
+              #:prefix license:))
+
+(packages->manifest (list (specification->package "make")
+                          guile-next
+                          (specification->package "guile-json@4.7.3")
+                          guile-ares-rs))
+
