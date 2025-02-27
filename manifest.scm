@@ -15,8 +15,7 @@
              ((guix licenses)
               #:prefix license:))
 
-(packages->manifest (list (specification->package "make")
-                          guile-next
+(packages->manifest (list (specification->package "make") guile-next
                           (specification->package "guile-json@4.7.3")
                           guile-ares-rs))
 
