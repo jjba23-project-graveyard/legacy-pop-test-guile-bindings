@@ -76,12 +76,14 @@
   (postgres get-postgres set-postgres!)
   (kafka get-kafka set-kafka!))
 
-(define-json-mapping <pop-service>
-  make-pop-service
-  pop-service?
-  json->pop-service <=> pop-service->json
-  
-  )
+;; (define-json-mapping <pop-service>
+;;                      make-pop-service
+;;                      pop-service?
+;;                      json->pop-service
+;;                      <=>
+;;                      pop-service->json
+
+;;                      )
 
 (define-record-type <body-pattern>
   (make-body-pattern pattern condition) body-pattern?
@@ -133,17 +135,18 @@
   (pop-keycloak get-pop-keycloak set-pop-keycloak!)
   (pop-sqlite get-pop-sqlite set-pop-sqlite!))
 
-
-(define-json-mapping <pop-scenario>
-  make-pop-scenario
-  pop-scenario?
-  json->pop-scenario <=> pop-scenario->json
-  (pop-services pop-service "pop_services"
-                (lambda (v) (map scm->link (vector->list v)))
-                (lambda (v) (list->vector (map link->scm v))))
-  )
-
-
+;; (define-json-mapping <pop-scenario>
+;;                      make-pop-scenario
+;;                      pop-scenario?
+;;                      json->pop-scenario
+;;                      <=>
+;;                      pop-scenario->json
+;;                      (pop-services pop-service "pop_services"
+;;                                    (lambda (v)
+;;                                      (map scm->link
+;;                                           (vector->list v)))
+;;                                    (lambda (v)
+;;                                      (list->vector (map link->scm v)))))
 
 ;; Green Energy Mix Example
 (define-public green-energy-mix-scenario
@@ -208,11 +211,21 @@
 
 (test-begin "pop-test-guile-bindings")
 (test-assert "Scenario creation"
-  (pop-scenario? green-energy-mix-scenario))
-(test-assert "Service count" (= 1 (length (get-pop-services green-energy-mix-scenario))))
-(test-assert "Action count" (= 1 (length (get-pop-actions green-energy-mix-scenario))))
-(test-assert "Service ID" (string=? "green-energy-mix" (get-id (car (get-pop-services green-energy-mix-scenario)))))
-(test-assert "Health Check Path" (string=? "/health" (get-path (get-health-check (car (get-pop-services green-energy-mix-scenario))))))
+             (pop-scenario? green-energy-mix-scenario))
+(test-assert "Service count"
+             (= 1
+                (length (get-pop-services green-energy-mix-scenario))))
+(test-assert "Action count"
+             (= 1
+                (length (get-pop-actions green-energy-mix-scenario))))
+(test-assert "Service ID"
+             (string=? "green-energy-mix"
+                       (get-id (car (get-pop-services
+                                     green-energy-mix-scenario)))))
+(test-assert "Health Check Path"
+             (string=? "/health"
+                       (get-path (get-health-check (car (get-pop-services
+                                                         green-energy-mix-scenario))))))
 
 ;; TODO : finalize JSON conversion of records
 
