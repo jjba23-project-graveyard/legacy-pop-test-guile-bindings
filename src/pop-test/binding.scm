@@ -17,7 +17,7 @@
 
 ;; pop-test records in Guile Scheme
 
-(define-module (pop-test guile)
+(define-module (pop-test guile-bindings)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-64)
   #:use-module (json record)
