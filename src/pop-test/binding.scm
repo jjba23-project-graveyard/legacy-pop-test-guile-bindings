@@ -250,6 +250,154 @@
                      (extra-headers http-assertion-extra-headers
                                     "extra_headers"))
 
+(define-record-type <pop-postgres>
+  (make-pop-postgres enabled image-name image-tag) pop-postgres?
+  (enabled get-pop-postgres-enabled set-pop-postgres-enabled!)
+  (image-name get-pop-postgres-image-name set-pop-postgres-image-name!)
+  (image-tag get-pop-postgres-image-tag set-pop-postgres-image-tag!))
+
+(define-json-mapping <pop-postgres>
+  make-pop-postgres
+  pop-postgres?
+  json->pop-postgres
+  <=>
+  pop-postgres->json
+  (enabled pop-postgres-enabled "enabled")
+  (image-name pop-postgres-image-name "image_name")
+  (image-tag pop-postgres-image-tag "image_tag"))
+
+(define-record-type <pop-kafka>
+  (make-pop-kafka enabled image-name image-tag) pop-kafka?
+  (enabled get-pop-kafka-enabled set-pop-kafka-enabled!)
+  (image-name get-pop-kafka-image-name set-pop-kafka-image-name!)
+  (image-tag get-pop-kafka-image-tag set-pop-kafka-image-tag!))
+
+(define-json-mapping <pop-kafka>
+                     make-pop-kafka
+                     pop-kafka?
+                     json->pop-kafka
+                     <=>
+                     pop-kafka->json
+                     (enabled pop-kafka-enabled "enabled")
+                     (image-name pop-kafka-image-name "image_name")
+                     (image-tag pop-kafka-image-tag "image_tag"))
+
+(define-record-type <pop-server-behavior>
+  (make-pop-server-behavior request-path
+                            request-method
+                            response-status
+                            request-content-type
+                            response-content-type
+                            response-body-file
+                            response-body)
+  pop-server-behavior?
+  (request-path get-pop-server-behavior-request-path)
+  (request-method get-pop-server-behavior-request-method)
+  (response-status get-pop-server-behavior-response-status)
+  (request-content-type get-pop-server-behavior-request-content-type)
+  (response-content-type get-pop-server-behavior-response-content-type)
+  (response-body-file get-pop-server-behavior-response-body-file)
+  (response-body get-pop-server-behavior-response-body))
+
+(define-json-mapping <pop-server-behavior>
+                     make-pop-server-behavior
+                     pop-server-behavior?
+                     json->pop-server-behavior
+                     <=>
+                     pop-server-behavior->json
+                     (request-path pop-server-behavior-request-path
+                                   "request_path")
+                     (request-method pop-server-behavior-request-method
+                                     "request_method")
+                     (response-status pop-server-behavior-response-status
+                                      "response_status")
+                     (request-content-type
+                      pop-server-behavior-request-content-type
+                      "request_content_type")
+                     (response-content-type
+                      pop-server-behavior-response-content-type
+                      "response_content_type")
+                     (response-body-file
+                      pop-server-behavior-response-body-file
+                      "response_body_file")
+                     (response-body pop-server-behavior-response-body
+                                    "response_body"))
+
+(define-record-type <pop-server>
+  (make-pop-server enabled image-name image-tag behaviors)
+  pop-server?
+  (enabled get-pop-server-enabled set-pop-server-enabled!)
+  (image-name get-pop-server-image-name set-pop-server-image-name!)
+  (image-tag get-pop-server-image-tag set-pop-server-image-tag!)
+  (behaviors get-pop-server-behaviors set-pop-server-behaviors!))
+
+(define-json-mapping <pop-server>
+                     make-pop-server
+                     pop-server?
+                     json->pop-server
+                     <=>
+                     pop-server->json
+                     (enabled pop-server-enabled "enabled")
+                     (image-name pop-server-image-name "image_name")
+                     (image-tag pop-server-image-tag "image_tag")
+                     (behaviors pop-server-behaviors "behaviors"))
+
+(define-record-type <pop-keycloak>
+  (make-pop-keycloak enabled
+                     image-name
+                     image-tag
+                     realm
+                     client-id
+                     client-secret
+                     email
+                     username
+                     password
+                     roles
+                     scopes)
+  pop-keycloak?
+  (enabled get-pop-keycloak-enabled set-pop-keycloak-enabled!)
+  (image-name get-pop-keycloak-image-name set-pop-keycloak-image-name!)
+  (image-tag get-pop-keycloak-image-tag set-pop-keycloak-image-tag!)
+  (realm get-pop-keycloak-realm set-pop-keycloak-realm!)
+  (client-id get-pop-keycloak-client-id set-pop-keycloak-client-id!)
+  (client-secret get-pop-keycloak-client-secret
+                 set-pop-keycloak-client-secret!)
+  (email get-pop-keycloak-email set-pop-keycloak-email!)
+  (username get-pop-keycloak-username set-pop-keycloak-username!)
+  (password get-pop-keycloak-password set-pop-keycloak-password!)
+  (roles get-pop-keycloak-roles set-pop-keycloak-roles!)
+  (scopes get-pop-keycloak-scopes set-pop-keycloak-scopes!))
+
+(define-json-mapping <pop-keycloak>
+                     make-pop-keycloak
+                     pop-keycloak?
+                     json->pop-keycloak
+                     <=>
+                     pop-keycloak->json
+                     (enabled pop-keycloak-enabled "enabled")
+                     (image-name pop-keycloak-image-name "image_name")
+                     (image-tag pop-keycloak-image-tag "image_tag")
+                     (realm pop-keycloak-realm "realm")
+                     (client-id pop-keycloak-client-id "client_id")
+                     (client-secret pop-keycloak-client-secret "client_secret")
+                     (email pop-keycloak-email "email")
+                     (username pop-keycloak-username "username")
+                     (password pop-keycloak-password "password")
+                     (roles pop-keycloak-roles "roles")
+                     (scopes pop-keycloak-scopes "scopes"))
+
+(define-record-type <pop-sqlite>
+  (make-pop-sqlite db-path) pop-sqlite?
+  (db-path get-pop-sqlite-db-path set-pop-sqlite-db-path!))
+
+(define-json-mapping <pop-sqlite>
+                     make-pop-sqlite
+                     pop-sqlite?
+                     json->pop-sqlite
+                     <=>
+                     pop-sqlite->json
+                     (db-path pop-sqlite-db-path "db_path"))
+
 (define-record-type <pop-scenario>
   (make-pop-scenario pop-services
                      pop-actions
@@ -280,19 +428,6 @@
                      (pop-server pop-scenario-pop-server "pop_server")
                      (pop-keycloak pop-scenario-pop-keycloak "pop_keycloak")
                      (pop-sqlite pop-scenario-pop-sqlite "pop_sqlite"))
-
-;; (define-json-mapping <pop-scenario>
-;;                      make-pop-scenario
-;;                      pop-scenario?
-;;                      json->pop-scenario
-;;                      <=>
-;;                      pop-scenario->json
-;;                      (pop-services pop-service "pop_services"
-;;                                    (lambda (v)
-;;                                      (map scm->link
-;;                                           (vector->list v)))
-;;                                    (lambda (v)
-;;                                      (list->vector (map link->scm v)))))
 
 (test-begin "pop-test-guile-bindings")
 
