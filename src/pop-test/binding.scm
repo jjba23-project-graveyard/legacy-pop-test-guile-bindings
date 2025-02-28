@@ -88,6 +88,36 @@
   (enabled pop-service-kafka-enabled "enabled")
   (host-var pop-service-kafka-bootstrap-server-var "bootstrap_server_var"))
 
+(define-record-type <pop-service-keycloak>
+  (make-pop-service-keycloak enabled url-var realm-var) pop-service-keycloak?
+  (enabled get-pop-service-keycloak-enabled set-pop-service-keycloak-enabled!)
+  (url-var get-pop-service-keycloak-url-var set-pop-service-keycloak-url-var!)
+  (realm-var get-pop-service-keycloak-realm-var set-pop-service-keycloak-realm-var!))
+
+(define-json-mapping <pop-service-keycloak>
+  make-pop-service-keycloak
+  pop-service-keycloak?
+  json->pop-service-keycloak
+  <=>
+  pop-service-keycloak->json
+  (enabled pop-service-keycloak-enabled "enabled")
+  (url-var pop-service-keycloak-url-var "url_var")
+  (realm-var pop-service-keycloak-realm-var "realm_var"))
+
+(define-record-type <pop-service-pop-server>
+  (make-pop-service-pop-server enabled url-var realm-var) pop-service-pop-server?
+  (enabled get-pop-service-pop-server-enabled set-pop-service-pop-server-enabled!)
+  (url-vars get-pop-service-pop-server-url-vars set-pop-service-pop-server-url-vars!))
+
+(define-json-mapping <pop-service-pop-server>
+  make-pop-service-pop-server
+  pop-service-pop-server?
+  json->pop-service-pop-server
+  <=>
+  pop-service-pop-server->json
+  (enabled pop-service-pop-server-enabled "enabled")
+  (url-vars pop-service-pop-server-url-vars "url_vars"))
+
 (define-record-type <pop-service>
   (make-pop-service id
                     name
@@ -98,7 +128,8 @@
                     env-vars
                     health-check
                     postgres
-                    kafka)
+                    kafka
+                    keycloak)
   pop-service?
   (id get-id set-pop-service-id!)
   (name get-pop-service-name set-pop-service-name!)
@@ -109,7 +140,8 @@
   (env-vars get-pop-service-env-vars set-pop-service-env-vars!)
   (health-check get-pop-service-health-check set-pop-service-health-check!)
   (postgres get-pop-service-postgres set-pop-service-postgres!)
-  (kafka get-pop-service-kafka set-pop-service-kafka!))
+  (kafka get-pop-service-kafka set-pop-service-kafka!)
+  (keycloak get-pop-service-keycloak set-pop-service-keycloak!))
 
 (define-json-mapping <pop-service>
   make-pop-service
@@ -177,7 +209,18 @@
   json->http-assertion
   <=>
   http-assertion->json
-  (name http-assertion-name "name"))
+  (name http-assertion-name "name")
+  (delay-seconds http-assertion-delay-seconds "delay_seconds")
+  (assert-code http-assertion-assert-code "assert_code")
+  (assert-url http-assertion-assert-url "assert_url")
+  (service-id http-assertion-service-id "service_id")
+  (method http-assertion-method "method")
+  (json-patterns http-assertion-json-patterns "json_patterns")
+  (html-patterns http-assertion-html-patterns "html_patterns")
+  (with-keycloak-user-token http-assertion-with-keycloak-user-token "with_keycloak_user_token")
+  (message-file-path http-assertion-message-file-path "message_file_path")
+  (message http-assertion-message "message")
+  (extra-headers http-assertion-extra-headers "extra_headers"))
 
 (define-record-type <pop-scenario>
   (make-pop-scenario pop-services
@@ -188,13 +231,27 @@
                      pop-keycloak
                      pop-sqlite)
   pop-scenario?
-  (pop-services get-pop-services set-pop-services!)
-  (pop-actions get-pop-actions set-pop-actions!)
-  (pop-postgres get-pop-postgres set-pop-postgres!)
-  (pop-kafka get-pop-kafka set-pop-kafka!)
-  (pop-server get-pop-server set-pop-server!)
-  (pop-keycloak get-pop-keycloak set-pop-keycloak!)
-  (pop-sqlite get-pop-sqlite set-pop-sqlite!))
+  (pop-services get-pop-scenario-pop-services set-pop-services!)
+  (pop-actions get-pop-scenario-pop-actions set-pop-scenario-pop-actions!)
+  (pop-postgres get-pop-scenario-pop-postgres set-pop-scenario-pop-postgres!)
+  (pop-kafka get-pop-scenario-pop-kafka set-pop-scenario-pop-kafka!)
+  (pop-server get-pop-scenario-pop-server set-pop-scenario-pop-server!)
+  (pop-keycloak get-pop-scenario-pop-keycloak set-pop-scenario-pop-keycloak!)
+  (pop-sqlite get-pop-scenario-pop-sqlite set-pop-scenario-pop-sqlite!))
+
+(define-json-mapping <pop-scenario>
+  make-pop-scenario
+  pop-scenario?
+  json->pop-scenario
+  <=>
+  pop-scenario->json
+  (pop-services pop-scenario-pop-services "pop_services")
+  (pop-actions pop-scenario-pop-actions "pop_actions")
+  (pop-postgres pop-scenario-pop-postgres "pop_postgres")
+  (pop-kafka pop-scenario-pop-kafka "pop_kafka")
+  (pop-server pop-scenario-pop-server "pop_server")
+  (pop-keycloak pop-scenario-pop-keycloak "pop_keycloak")
+  (pop-sqlite pop-scenario-pop-sqlite "pop_sqlite"))
 
 ;; (define-json-mapping <pop-scenario>
 ;;                      make-pop-scenario
@@ -235,6 +292,8 @@
           ;; postgres
           #f
           ;; kafka
+          #f
+          ;; keycloak
           #f))
    ;; pop-actions
    (list (make-http-assertion
