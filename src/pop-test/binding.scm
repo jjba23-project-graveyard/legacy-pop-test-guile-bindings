@@ -25,13 +25,26 @@
 
 ;; pop-test records in Guile Scheme
 
-(define-record-type <pop-service-health-action>
-  (make-pop-service-health-action type path patience-seconds always-healthy)
-  pop-service-health-action?
-  (type get-type set-type!)
-  (path get-path set-path!)
-  (patience-seconds get-patience-seconds set-patience-seconds!)
-  (always-healthy get-always-healthy set-always-healthy!))
+(define-record-type <pop-service-health-check>
+  (make-pop-service-health-check type path patience-seconds always-healthy)
+  pop-service-health-check?
+  (type get-pop-service-health-check-type set-pop-service-health-check-type!)
+  (path get-pop-service-health-check-path set-pop-service-health-check-path!)
+  (patience-seconds get-pop-service-health-check-patience-seconds
+                    set-pop-service-health-check-patience-seconds!)
+  (always-healthy get-pop-service-health-check-always-healthy
+                  set-pop-service-health-check-always-healthy!))
+
+(define-json-mapping <pop-service-health-check>
+  make-pop-service-health-check
+  pop-service-health-check?
+  json->pop-service-health-check
+  <=>
+  pop-service-health-check->json
+  (type pop-service-health-check-type "type")
+  (path pop-service-health-check-type "path")
+  (patience-seconds pop-service-health-check-type "patience_seconds")
+  (always-healthy pop-service-health-check-type "always_healthy"))
 
 (define-record-type <pop-service-postgres>
   (make-pop-service-postgres enabled
@@ -41,17 +54,39 @@
                              user-var
                              pass-var)
   pop-service-postgres?
-  (enabled get-enabled set-enabled!)
-  (host-var get-host-var set-host-var!)
-  (port-var get-port-var set-port-var!)
-  (db-var get-db-var set-db-var!)
-  (user-var get-user-var set-user-var!)
-  (pass-var get-pass-var set-pass-var!))
+  (enabled get-pop-service-postgres-enabled set-pop-service-postgres-enabled!)
+  (host-var get-pop-service-postgres-host-var set-pop-service-postgres-host-var!)
+  (port-var get-pop-service-postgres-port-var set-pop-service-postgres-port-var!)
+  (db-var get-pop-service-postgres-db-var set-pop-service-postgres-db-var!)
+  (user-var get-pop-service-postgres-user-var set-pop-service-postgres-user-var!)
+  (pass-var get-pop-service-postgres-pass-var set-pop-service-postgres-pass-var!))
+
+(define-json-mapping <pop-service-postgres>
+  make-pop-service-postgres
+  pop-service-postgres?
+  json->pop-service-postgres
+  <=>
+  pop-service-postgres->json
+  (enabled pop-service-postgres-enabled "enabled")
+  (host-var pop-service-postgres-host-var "host_var")
+  (port-var pop-service-postgres-port-var "port_var")
+  (db-var pop-service-postgres-db-var "db_var")
+  (user-var pop-service-postgres-user-var "user_var")
+  (pass-var pop-service-postgres-pass-var "pass_var"))
 
 (define-record-type <pop-service-kafka>
   (make-pop-service-kafka enabled bootstrap-server-var) pop-service-kafka?
-  (enabled get-enabled set-enabled!)
-  (bootstrap-server-var get-bootstrap-server-var set-bootstrap-server-var!))
+  (enabled get-pop-service-kafka-enabled set-pop-service-kafka-enabled!)
+  (bootstrap-server-var get-pop-service-kafka-bootstrap-server-var set-pop-service-kafka-bootstrap-server-var!))
+
+(define-json-mapping <pop-service-kafka>
+  make-pop-service-kafka
+  pop-service-kafka?
+  json->pop-service-kafka
+  <=>
+  pop-service-kafka->json
+  (enabled pop-service-kafka-enabled "enabled")
+  (host-var pop-service-kafka-bootstrap-server-var "bootstrap_server_var"))
 
 (define-record-type <pop-service>
   (make-pop-service id
@@ -65,30 +100,48 @@
                     postgres
                     kafka)
   pop-service?
-  (id get-id set-id!)
-  (name get-name set-name!)
-  (dir get-dir set-dir!)
-  (base-url get-base-url set-base-url!)
-  (shell-path get-shell-path set-shell-path!)
-  (start-cmd-args get-start-cmd-args set-start-cmd-args!)
-  (env-vars get-env-vars set-env-vars!)
-  (health-check get-health-check set-health-check!)
-  (postgres get-postgres set-postgres!)
-  (kafka get-kafka set-kafka!))
+  (id get-id set-pop-service-id!)
+  (name get-pop-service-name set-pop-service-name!)
+  (dir get-pop-service-dir set-pop-service-dir!)
+  (base-url get-pop-service-base-url set-pop-service-base-url!)
+  (shell-path get-pop-service-shell-path set-pop-service-shell-path!)
+  (start-cmd-args get-pop-service-start-cmd-args set-pop-service-start-cmd-args!)
+  (env-vars get-pop-service-env-vars set-pop-service-env-vars!)
+  (health-check get-pop-service-health-check set-pop-service-health-check!)
+  (postgres get-pop-service-postgres set-pop-service-postgres!)
+  (kafka get-pop-service-kafka set-pop-service-kafka!))
 
-;; (define-json-mapping <pop-service>
-;;                      make-pop-service
-;;                      pop-service?
-;;                      json->pop-service
-;;                      <=>
-;;                      pop-service->json
-
-;;                      )
+(define-json-mapping <pop-service>
+  make-pop-service
+  pop-service?
+  json->pop-service
+  <=>
+  pop-service->json
+  (id pop-service-id "id")
+  (name pop-service-name "name")
+  (dir pop-service-dir "dir")
+  (base-url pop-service-base-url "base_url")
+  (shell-path pop-service-shell-path "shell_path")
+  (start-cmd-args pop-service-start-cmd-args
+                  "start_cmd_args")
+  (env-vars pop-service-env-vars "env_vars")
+  (health-check pop-service-health-check "health_check")
+  (postgres pop-service-postgres "postgres")
+  (kafka pop-service-kafka "kafka"))
 
 (define-record-type <body-pattern>
   (make-body-pattern pattern condition) body-pattern?
-  (pattern get-pattern set-pattern!)
-  (condition get-condition set-condition!))
+  (pattern get-body-pattern-pattern set-body-pattern-pattern!)
+  (condition get-body-pattern-condition set-body-pattern-condition!))
+
+(define-json-mapping <body-pattern>
+  make-body-pattern
+  body-pattern?
+  json->body-pattern
+  <=>
+  body-pattern->json
+  (pattern body-pattern-pattern "pattern")
+  (condition body-pattern-condition "condition"))
 
 (define-record-type <http-assertion>
   (make-http-assertion name
@@ -104,19 +157,27 @@
                        message
                        extra-headers)
   http-assertion?
-  (name get-name set-name!)
-  (delay-seconds get-delay-seconds set-delay-seconds!)
-  (assert-code get-assert-code set-assert-code!)
-  (assert-url get-assert-url set-assert-url!)
-  (service-id get-service-id set-service-id!)
-  (method get-method set-method!)
-  (json-patterns get-json-patterns set-json-patterns!)
-  (html-patterns get-html-patterns set-html-patterns!)
-  (with-keycloak-user-token get-with-keycloak-user-token
-                            set-with-keycloak-user-token!)
-  (message-file-path get-message-file-path set-message-file-path!)
-  (message get-message set-message!)
-  (extra-headers get-extra-headers set-extra-headers!))
+  (name get-http-assertion-name set-http-assertion-name!)
+  (delay-seconds get-http-assertion-delay-seconds set-http-assertion-delay-seconds!)
+  (assert-code get-http-assertion-assert-code set-http-assertion-assert-code!)
+  (assert-url get-http-assertion-assert-url set-http-assertion-assert-url!)
+  (service-id get-http-assertion-service-id set-http-assertion-service-id!)
+  (method get-http-assertion-method set-http-assertion-method!)
+  (json-patterns get-http-assertion-json-patterns set-http-assertion-json-patterns!)
+  (html-patterns get-http-assertion-html-patterns set-http-assertion-html-patterns!)
+  (with-keycloak-user-token get-http-assertion-with-keycloak-user-token
+                            set-http-assertion-with-keycloak-user-token!)
+  (message-file-path get-http-assertion-message-file-path set-http-assertion-message-file-path!)
+  (message get-http-assertion-message set-http-assertion-message!)
+  (extra-headers get-http-assertion-extra-headers set-http-assertion-extra-headers!))
+
+(define-json-mapping <http-assertion>
+  make-http-assertion
+  http-assertion?
+  json->http-assertion
+  <=>
+  http-assertion->json
+  (name http-assertion-name "name"))
 
 (define-record-type <pop-scenario>
   (make-pop-scenario pop-services
@@ -148,6 +209,8 @@
 ;;                                    (lambda (v)
 ;;                                      (list->vector (map link->scm v)))))
 
+(test-begin "pop-test-guile-bindings")
+
 ;; Green Energy Mix Example
 (define-public green-energy-mix-scenario
   (make-pop-scenario
@@ -168,7 +231,7 @@
           ;; env-vars
           '(("SOME-TOKEN" . "0027809ce9"))
           ;; health check
-          (make-pop-service-health-action #f "/health" 120 #f)
+          (make-pop-service-health-check #f "/health" 120 #f)
           ;; postgres
           #f
           ;; kafka
@@ -209,7 +272,6 @@
    #f ;pop-sqlite
    ))
 
-(test-begin "pop-test-guile-bindings")
 (test-assert "Scenario creation"
              (pop-scenario? green-energy-mix-scenario))
 (test-assert "Service count"
@@ -223,19 +285,35 @@
                        (get-id (car (get-pop-services
                                      green-energy-mix-scenario)))))
 (test-assert "Health Check Path"
-             (string=? "/health"
-                       (get-path (get-health-check (car (get-pop-services
-                                                         green-energy-mix-scenario))))))
+  (string=? "/health"
+            (get-pop-service-health-check-path (get-pop-service-health-check (car (get-pop-services
+                                                                                   green-energy-mix-scenario))))))
 
 ;; TODO : finalize JSON conversion of records
 
 ;; (define (common-actions scenario)
 ;;   (write scenario)
-;;   (write (pop-scenario->json scenario))
+;;   (display "\n\n========\n\n")
+;;   (write (car (get-pop-services scenario)))
+;;   (display "\n\n========\n\n")
+;;   (write (get-pop-service-name (car (get-pop-services scenario))))
+;;   ;; (write (pop-service->json (car (get-pop-services scenario))))
 ;;   #t)
 
-;; (test-eq  "do some common actions with pop-scenarios" #t (common-actions green-energy-mix-scenario))
+;; (test-eq "do some common actions with pop-scenarios" #t
+;;          (common-actions green-energy-mix-scenario))
+
+(define (healthcheck-test)
+  (let ((hc (make-pop-service-health-check "http" "/health" 120 #f)))
+    (write hc)
+    (write (pop-service-health-check->json hc))
+    #t))
+(test-assert "healthcheck json generation works" (equal? #t (healthcheck-test)))
 
 (test-end)
 
 ;; 
+;; (type pop-service-health-check-type "type")
+;; (path pop-service-health-check-type "path")
+;; (patience-seconds pop-service-health-check-type "patience_seconds")
+;; (always-healthy pop-service-health-check-type "always_healthy")
