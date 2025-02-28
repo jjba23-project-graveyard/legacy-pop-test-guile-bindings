@@ -105,7 +105,7 @@
   (realm-var pop-service-keycloak-realm-var "realm_var"))
 
 (define-record-type <pop-service-pop-server>
-  (make-pop-service-pop-server enabled url-var realm-var) pop-service-pop-server?
+  (make-pop-service-pop-server enabled url-vars) pop-service-pop-server?
   (enabled get-pop-service-pop-server-enabled set-pop-service-pop-server-enabled!)
   (url-vars get-pop-service-pop-server-url-vars set-pop-service-pop-server-url-vars!))
 
@@ -159,7 +159,9 @@
   (env-vars pop-service-env-vars "env_vars")
   (health-check pop-service-health-check "health_check")
   (postgres pop-service-postgres "postgres")
-  (kafka pop-service-kafka "kafka"))
+  (kafka pop-service-kafka "kafka")
+  (keycloak pop-service-keycloak "keycloak")
+  (pop-server pop-service-pop-server "pop_server"))
 
 (define-record-type <body-pattern>
   (make-body-pattern pattern condition) body-pattern?
