@@ -550,12 +550,55 @@
                                                            (car (get-pop-scenario-pop-services
                                                                  green-energy-mix-scenario))))))
 
-(test-assert "healthcheck json generation works"
+(test-assert "pop-service-health-check json generation works"
              (equal? #t
-                     (let ((hc (make-pop-service-health-check "http" "/health"
-                                                              120 #f)))
-                       (write hc)
-                       (write (pop-service-health-check->json hc)) #t)))
+                     (let ((sut (make-pop-service-health-check "http"
+                                                               "/health" 120
+                                                               #f)))
+                       (newline)
+                       (display (pop-service-health-check->json sut))
+                       (newline) #t)))
+
+(test-assert "pop-service-postgres json generation works"
+             (equal? #t
+                     (let ((sut (make-pop-service-postgres #t
+                                 "POSTGRES_HOST"
+                                 "POSTGRES_PORT"
+                                 "POSTGRES_DB"
+                                 "POSTGRES_USER"
+                                 "POSTGRES_PASSWORD")))
+                       (newline)
+                       (display (pop-service-postgres->json sut))
+                       (newline) #t)))
+
+(test-assert "http-assertion json generation works"
+             (equal? #t
+                     (let ((sut (make-http-assertion
+                                 ;; name
+                                 "Check that the forecast endpoint returns a 200 with correct data, with load and solar"
+                                 ;; delay-seconds
+                                 #f
+                                 ;; assert-code
+                                 200
+                                 ;; assert-url
+                                 "/api/v1/forecast"
+                                 ;; service-id
+                                 "green-energy-mix"
+                                 ;; method
+                                 "GET"
+                                 #f ;json-patterns
+                                 ;; (list (make-body-pattern "meta.forecastDate" "non-empty-str")
+                                 ;; (make-body-pattern "data.[0].load" "> 0")
+                                 ;; (make-body-pattern "data.[0].solar" ">= 0"))
+                                 #f ;html-patterns
+                                 #f ;with-keycloak-user-token
+                                 #f ;message-file-path
+                                 #f ;message
+                                 #f ;extra-headers
+                                 )))
+                       (newline)
+                       (display (http-assertion->json sut))
+                       (newline) #t)))
 
 (test-end)
 
