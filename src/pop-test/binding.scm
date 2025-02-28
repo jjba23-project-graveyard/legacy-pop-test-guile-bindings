@@ -25,6 +25,8 @@
 
 ;; pop-test records in Guile Scheme
 
+;; Health Check Record
+;; -------------------
 (define-record-type <pop-service-health-check>
   (make-pop-service-health-check type path patience-seconds always-healthy)
   pop-service-health-check?
@@ -48,6 +50,8 @@
                      (always-healthy pop-service-health-check-type
                                      "always_healthy"))
 
+;; PostgreSQL Service Record
+;; -------------------------
 (define-record-type <pop-service-postgres>
   (make-pop-service-postgres enabled
                              host-var
@@ -80,6 +84,8 @@
                      (user-var pop-service-postgres-user-var "user_var")
                      (pass-var pop-service-postgres-pass-var "pass_var"))
 
+;; Kafka Service Record
+;; --------------------
 (define-record-type <pop-service-kafka>
   (make-pop-service-kafka enabled bootstrap-server-var) pop-service-kafka?
   (enabled get-pop-service-kafka-enabled set-pop-service-kafka-enabled!)
@@ -96,6 +102,8 @@
                      (host-var pop-service-kafka-bootstrap-server-var
                                "bootstrap_server_var"))
 
+;; Keycloak Service Record
+;; -----------------------
 (define-record-type <pop-service-keycloak>
   (make-pop-service-keycloak enabled url-var realm-var) pop-service-keycloak?
   (enabled get-pop-service-keycloak-enabled set-pop-service-keycloak-enabled!)
@@ -113,6 +121,8 @@
                      (url-var pop-service-keycloak-url-var "url_var")
                      (realm-var pop-service-keycloak-realm-var "realm_var"))
 
+;; Pop Server Service Record
+;; -----------------------
 (define-record-type <pop-service-pop-server>
   (make-pop-service-pop-server enabled url-vars) pop-service-pop-server?
   (enabled get-pop-service-pop-server-enabled
@@ -129,6 +139,8 @@
                      (enabled pop-service-pop-server-enabled "enabled")
                      (url-vars pop-service-pop-server-url-vars "url_vars"))
 
+;; Pop Service Record
+;; -----------------------
 (define-record-type <pop-service>
   (make-pop-service id
                     name
@@ -177,6 +189,8 @@
                      (keycloak pop-service-keycloak "keycloak")
                      (pop-server pop-service-pop-server "pop_server"))
 
+;; JSON assertion body pattern
+;; -----------------------
 (define-record-type <body-pattern>
   (make-body-pattern pattern condition) body-pattern?
   (pattern get-body-pattern-pattern set-body-pattern-pattern!)
@@ -191,6 +205,8 @@
                      (pattern body-pattern-pattern "pattern")
                      (condition body-pattern-condition "condition"))
 
+;; HTTP assertion Record
+;; -----------------------
 (define-record-type <http-assertion>
   (make-http-assertion name
                        delay-seconds
@@ -250,6 +266,8 @@
                      (extra-headers http-assertion-extra-headers
                                     "extra_headers"))
 
+;; Postgres config for scenario Record
+;; -----------------------
 (define-record-type <pop-postgres>
   (make-pop-postgres enabled image-name image-tag) pop-postgres?
   (enabled get-pop-postgres-enabled set-pop-postgres-enabled!)
@@ -257,15 +275,17 @@
   (image-tag get-pop-postgres-image-tag set-pop-postgres-image-tag!))
 
 (define-json-mapping <pop-postgres>
-  make-pop-postgres
-  pop-postgres?
-  json->pop-postgres
-  <=>
-  pop-postgres->json
-  (enabled pop-postgres-enabled "enabled")
-  (image-name pop-postgres-image-name "image_name")
-  (image-tag pop-postgres-image-tag "image_tag"))
+                     make-pop-postgres
+                     pop-postgres?
+                     json->pop-postgres
+                     <=>
+                     pop-postgres->json
+                     (enabled pop-postgres-enabled "enabled")
+                     (image-name pop-postgres-image-name "image_name")
+                     (image-tag pop-postgres-image-tag "image_tag"))
 
+;; Kafka config for scenario Record
+;; -----------------------
 (define-record-type <pop-kafka>
   (make-pop-kafka enabled image-name image-tag) pop-kafka?
   (enabled get-pop-kafka-enabled set-pop-kafka-enabled!)
@@ -282,6 +302,8 @@
                      (image-name pop-kafka-image-name "image_name")
                      (image-tag pop-kafka-image-tag "image_tag"))
 
+;; Pop Server predefined behaviors for scenario
+;; -----------------------
 (define-record-type <pop-server-behavior>
   (make-pop-server-behavior request-path
                             request-method
@@ -323,6 +345,8 @@
                      (response-body pop-server-behavior-response-body
                                     "response_body"))
 
+;; Pop Server config for scenario Record
+;; -----------------------
 (define-record-type <pop-server>
   (make-pop-server enabled image-name image-tag behaviors)
   pop-server?
@@ -342,6 +366,8 @@
                      (image-tag pop-server-image-tag "image_tag")
                      (behaviors pop-server-behaviors "behaviors"))
 
+;; Keycloak config for scenario Record
+;; -----------------------
 (define-record-type <pop-keycloak>
   (make-pop-keycloak enabled
                      image-name
@@ -386,6 +412,8 @@
                      (roles pop-keycloak-roles "roles")
                      (scopes pop-keycloak-scopes "scopes"))
 
+;; Sqlite config for scenario Record
+;; -----------------------
 (define-record-type <pop-sqlite>
   (make-pop-sqlite db-path) pop-sqlite?
   (db-path get-pop-sqlite-db-path set-pop-sqlite-db-path!))
@@ -398,6 +426,8 @@
                      pop-sqlite->json
                      (db-path pop-sqlite-db-path "db_path"))
 
+;; Scenario Record
+;; -----------------------
 (define-record-type <pop-scenario>
   (make-pop-scenario pop-services
                      pop-actions
@@ -429,66 +459,70 @@
                      (pop-keycloak pop-scenario-pop-keycloak "pop_keycloak")
                      (pop-sqlite pop-scenario-pop-sqlite "pop_sqlite"))
 
+;;
+;; -------------
+;; Module tests
+;; -------------
+;;
+
 (test-begin "pop-test-guile-bindings")
 
+(define green-energy-mix-service
+  (make-pop-service
+   ;; id
+   "green-energy-mix"
+   ;; name
+   "Green Energy Mix"
+   ;; dir
+   "$HOME/Ontwikkeling/Werk"
+   ;; base-url
+   "http://localhost:50000"
+   ;; shell-path
+   #f
+   ;; start-cmd-args
+   (list "sbt \"greenEnergyMix/run\"")
+   ;; env-vars
+   '(("SOME-TOKEN" . "0027809ce9"))
+   ;; health check
+   (make-pop-service-health-check #f "/health" 120 #f)
+   #f ;postgres
+   #f ;kafka
+   #f ;keycloak
+   #f ;pop-server
+   ))
+
+(define green-energy-mix-base-assertion
+  (make-http-assertion
+   ;; name
+   "Check that the forecast endpoint returns a 200 with correct data, with load and solar"
+   ;; delay-seconds
+   #f
+   ;; assert-code
+   200
+   ;; assert-url
+   "/api/v1/forecast"
+   ;; service-id
+   "green-energy-mix"
+   ;; method
+   "GET"
+   ;; json-patterns
+   (list (make-body-pattern "meta.forecastDate" "non-empty-str")
+         (make-body-pattern "data.[0].load" "> 0")
+         (make-body-pattern "data.[0].solar" ">= 0"))
+   #f ;html-patterns
+   #f ;with-keycloak-user-token
+   #f ;message-file-path
+   #f ;message
+   #f ;extra-headers
+   ))
+
 ;; Green Energy Mix Example
-(define-public green-energy-mix-scenario
+(define green-energy-mix-scenario
   (make-pop-scenario
    ;; pop-services
-   (list (make-pop-service
-          ;; id
-          "green-energy-mix"
-          ;; name
-          "Green Energy Mix"
-          ;; dir
-          "$HOME/Ontwikkeling/Werk"
-          ;; base-url
-          "http://localhost:50000"
-          ;; shell-path
-          #f
-          ;; start-cmd-args
-          (list "sbt \"greenEnergyMix/run\"")
-          ;; env-vars
-          '(("SOME-TOKEN" . "0027809ce9"))
-          ;; health check
-          (make-pop-service-health-check #f "/health" 120 #f)
-          ;; postgres
-          #f
-          ;; kafka
-          #f
-          ;; keycloak
-          #f
-          ;; pop-server
-          #f))
+   (list green-energy-mix-service)
    ;; pop-actions
-   (list (make-http-assertion
-          ;; name
-          "Check that the forecast endpoint returns a 200 with correct data, with load and solar"
-          ;; delay-seconds
-          #f
-          ;; assert-code
-          200
-          ;; assert-url
-          "/api/v1/forecast"
-          ;; service-id
-          "green-energy-mix"
-          ;; method
-          "GET"
-          ;; json-patterns
-          (list (make-body-pattern "meta.forecastDate" "non-empty-str")
-                (make-body-pattern "data.[0].load" "> 0")
-                (make-body-pattern "data.[0].solar" ">= 0"))
-          ;; html-patterns
-          #f
-          ;; with-keycloak-user-token
-          #f
-          ;; message-file-path
-          #f
-          ;; message
-          #f
-          ;; extra-headers
-          #f))
-
+   (list green-energy-mix-base-assertion)
    #f ;pop-postgres
    #f ;pop-kafka
    #f ;pop-server
@@ -516,20 +550,6 @@
                                                            (car (get-pop-scenario-pop-services
                                                                  green-energy-mix-scenario))))))
 
-;; TODO : finalize JSON conversion of records
-
-;; (define (common-actions scenario)
-;;   (write scenario)
-;;   (display "\n\n========\n\n")
-;;   (write (car (get-pop-services scenario)))
-;;   (display "\n\n========\n\n")
-;;   (write (get-pop-service-name (car (get-pop-services scenario))))
-;;   ;; (write (pop-service->json (car (get-pop-services scenario))))
-;;   #t)
-
-;; (test-eq "do some common actions with pop-scenarios" #t
-;;          (common-actions green-energy-mix-scenario))
-
 (test-assert "healthcheck json generation works"
              (equal? #t
                      (let ((hc (make-pop-service-health-check "http" "/health"
@@ -539,8 +559,4 @@
 
 (test-end)
 
-;; 
-;; (type pop-service-health-check-type "type")
-;; (path pop-service-health-check-type "path")
-;; (patience-seconds pop-service-health-check-type "patience_seconds")
-;; (always-healthy pop-service-health-check-type "always_healthy")
+;; binding.scm ends here
